@@ -1,0 +1,159 @@
+/* ============================================================
+   Custom styles for Unified Paradigm documentation
+   ============================================================ */
+
+/* Better Vietnamese font rendering */
+:root {
+  --md-text-font: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  --md-code-font: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+}
+
+/* Improve readability for Vietnamese diacritics */
+.md-typeset {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.md-typeset h2 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: 2.5rem;
+}
+
+.md-typeset h3,
+.md-typeset h4 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ASCII diagrams need monospace and proper container */
+.md-typeset pre code {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  font-variant-ligatures: none;
+}
+
+/* ASCII art preservation in code blocks */
+.md-typeset .highlight pre {
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* Better blockquote styling */
+.md-typeset blockquote {
+  border-left: 4px solid var(--md-accent-fg-color);
+  background: var(--md-default-bg-color--light);
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  border-radius: 0 4px 4px 0;
+  color: var(--md-default-fg-color);
+  font-style: normal;
+}
+
+.md-typeset blockquote p {
+  margin: 0;
+}
+
+/* Tables: ensure horizontal scroll on mobile, no overflow break */
+.md-typeset__table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+  display: table;
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 768px) {
+  .md-typeset table:not([class]) {
+    white-space: normal;
+  }
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--md-default-bg-color--light);
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th {
+  padding: 0.6em 0.9em;
+  vertical-align: top;
+}
+
+/* Inline code highlight */
+.md-typeset code {
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  background: var(--md-code-bg-color);
+}
+
+/* Navigation footer at bottom of each page (the manual one we added) */
+.md-typeset hr + p strong:first-child {
+  font-weight: 500;
+}
+
+/* Slightly tighter spacing between list items */
+.md-typeset ul li,
+.md-typeset ol li {
+  margin-bottom: 0.3rem;
+}
+
+/* Highlight admonitions if used later */
+.md-typeset .admonition,
+.md-typeset details {
+  font-size: 0.78rem;
+}
+
+/* Print-friendly */
+@media print {
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-footer {
+    display: none !important;
+  }
+  .md-content {
+    margin: 0 !important;
+  }
+}
+
+/* Subtle improvement to TOC sidebar */
+.md-nav__title {
+  font-weight: 600;
+}
+
+.md-nav--secondary .md-nav__list {
+  font-size: 0.7rem;
+}
+
+/* Better link visual */
+.md-typeset a {
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.2s;
+}
+
+.md-typeset a:hover {
+  border-bottom-color: var(--md-accent-fg-color);
+}
+
+/* Code block "copy" button always visible (not just on hover) */
+.md-clipboard {
+  opacity: 0.4;
+}
+
+.md-clipboard:hover {
+  opacity: 1;
+}

@@ -1,0 +1,146 @@
+# Site Information
+site_name: Bản đồ tư duy thống nhất
+site_description: React Hooks, Elixir/OTP, Inversion of Control và Landscape Rộng hơn — Một tài liệu kiến trúc dành cho senior developer
+site_author: SOBA GROUP
+site_url: https://unified-paradigm.pages.dev/
+copyright: Copyright &copy; 2026 SOBA GROUP
+
+# Repository (optional, comment out if not using git hosting)
+# repo_name: yourname/unified-paradigm
+# repo_url: https://github.com/yourname/unified-paradigm
+# edit_uri: edit/main/docs/
+
+# Theme Configuration
+theme:
+  name: material
+  language: vi
+
+  # Color palette with light/dark toggle
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Chuyển sang chế độ tối
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Chuyển sang chế độ sáng
+
+  # Typography
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  # Features
+  features:
+    - navigation.instant          # SPA-like navigation
+    - navigation.instant.progress # Progress indicator
+    - navigation.tracking         # URL updates with active anchor
+    - navigation.tabs             # Top-level sections as tabs
+    - navigation.sections         # Render sections in sidebar
+    - navigation.expand           # Expand all sections by default
+    - navigation.path             # Breadcrumb navigation
+    - navigation.indexes          # Section index pages
+    - navigation.top              # Back-to-top button
+    - navigation.footer           # Previous/next page links in footer
+    - toc.follow                  # Sidebar TOC follows scrolling
+    - search.suggest              # Search suggestions
+    - search.highlight            # Highlight matches in pages
+    - search.share                # Shareable search URLs
+    - content.code.copy           # Code block copy button
+    - content.code.annotate       # Code annotations
+    - content.tabs.link           # Linked content tabs
+    - content.tooltips            # Improved tooltips
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    annotation: material/arrow-right-circle
+
+# Plugins
+plugins:
+  - search:
+      lang:
+        - vi
+        - en
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;'
+
+# Markdown Extensions
+markdown_extensions:
+  # Python Markdown core
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Liên kết tới mục này
+      toc_depth: 4
+
+  # PyMdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Custom CSS
+extra_css:
+  - stylesheets/extra.css
+
+# Navigation Structure
+nav:
+  - "Mở đầu":
+      - "Phần 0 — Nền tảng lý thuyết": index.md
+  - "Triển khai cụ thể":
+      - "Phần 1 — React Hiện đại": react.md
+      - "Phần 2 — Elixir/OTP": elixir-otp.md
+      - "Phần 3 — Inversion of Control": ioc.md
+      - "Phần 4 — Phoenix LiveView": liveview.md
+  - "Tổng hợp":
+      - "Phần 5 — Bản đồ thống nhất": unified-map.md
+      - "Phần 6 — Trade-offs & Anti-patterns": tradeoffs.md
+      - "Phần 7 — Landscape Toàn cục": landscape.md
+  - "Đọc thêm":
+      - "Phần 8 — Phụ lục & Bibliography": bibliography.md
+
+# Extra
+extra:
+  generator: false  # Hide "Made with Material for MkDocs"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub
