@@ -1,12 +1,12 @@
 # Phần 3 — Inversion of Control: nguyên lý xuyên suốt
 
-### 3.1. Định nghĩa, Hollywood Principle và lịch sử
+## 3.1. Định nghĩa, Hollywood Principle và lịch sử
 
 **Inversion of Control** (IoC) là khái niệm xuất hiện trong bài "Designing Reusable Classes" (Johnson & Foote, 1988) và được Martin Fowler hệ thống hóa lại. Định nghĩa gốc: *khi framework điều khiển flow, còn application code chỉ cung cấp các đoạn được framework gọi tại thời điểm thích hợp*.
 
 Slogan nổi tiếng: **"Don't call us, we'll call you"** — Hollywood Principle.
 
-```
+```text
 Flow truyền thống (không IoC):        IoC (framework điều khiển):
 ─────────────────────────────          ──────────────────────────────
 main()                                 Framework.run()
@@ -26,12 +26,12 @@ IoC có hai phương ngữ thường bị nhầm lẫn:
 
 Cả hai đều phục vụ cùng mục tiêu: **giảm coupling, tăng testability, tăng tính tái sử dụng**, vì code của bạn không còn nắm quyền điều phối — nó chỉ cần thuần và đúng tại điểm móc.
 
-### 3.2. IoC trong React: hooks như "effect handlers" được inject
+## 3.2. IoC trong React: hooks như "effect handlers" được inject
 
 Nhìn lại React với lăng kính IoC:
 
 | Action | Ai làm | Ý nghĩa IoC |
-|---|---|---|
+| --- | --- | --- |
 | Gọi `render` component | React reconciler (không phải bạn) | "Don't call us" |
 | Gọi cleanup function | React gọi đúng thời điểm | Lifecycle callback |
 | Cấp phát slot state | React quyết định (fiber node) | Framework-managed state |
@@ -79,7 +79,7 @@ const testApp = (
 );
 ```
 
-### 3.3. IoC trong Elixir/OTP: behaviour + supervisor
+## 3.3. IoC trong Elixir/OTP: behaviour + supervisor
 
 OTP là một trong những hiện thân **trong sạch nhất** của IoC trong toàn ngành. Bằng chứng:
 
@@ -121,9 +121,9 @@ Bạn không quyết định khi nào worker được start, restart, hay shutdo
 
 `Application.start/2` được BEAM gọi khi node khởi động. Bạn không gọi nó.
 
-### 3.4. IoC trong cả hai: dependency injection ngầm
+## 3.4. IoC trong cả hai: dependency injection ngầm
 
-```
+```text
 React DI:                              Elixir DI:
 ─────────────────────────────          ──────────────────────────────
 Context Provider                       Registry + :via tuple
@@ -135,18 +135,15 @@ useContext() trong component           Application.get_env/3 trong module
 
 Cả hai đều đẩy "ai cung cấp implementation nào" ra khỏi business logic, để cùng một code chạy trong production, trong test, hoặc trong môi trường mock-up.
 
-### 3.5. Trade-offs của IoC
+## 3.5. Trade-offs của IoC
 
 | Lợi ích | Cái giá phải trả |
-|---|---|
+| --- | --- |
 | Decoupling — swap implementation dễ dàng | "Magic" — flow ngầm khó debug |
 | Testability — mock dependencies | Stack trace đi qua framework dày đặc |
 | Framework-driven optimization (batching, scheduling) | Phụ thuộc vào quy ước của framework |
 | Plugin-ability — mở rộng không sửa core | Khó thoát khỏi framework khi cần |
 | Hot code swap (OTP), concurrent updates (React) | Học thêm "ngôn ngữ" của framework |
-
----
-
 
 ---
 

@@ -1,6 +1,6 @@
 # Phần 8 — Phụ lục: Đọc sâu hơn
 
-### Pragmatic / Engineering (đọc trước)
+## Pragmatic / Engineering (đọc trước)
 
 - Gary Bernhardt — *"Boundaries"* (talk SCNA 2012) và *"Functional Core, Imperative Shell"* (Destroy All Software screencast). Đây là cách giải thích ngắn nhất có thể cho toàn bộ tài liệu này.
 - Dan Abramov — *"Algebraic Effects for the Rest of Us"* (overreacted.io, 2019). Đọc ngay sau Bernhardt.
@@ -9,7 +9,7 @@
 - Joe Armstrong — *"Programming Erlang"* (Pragmatic Bookshelf, 2nd ed). Chương về error handling và supervision.
 - Robert Nystrom — *"Game Programming Patterns"* (gameprogrammingpatterns.com). Game Loop, Component, Event Queue patterns.
 
-### Foundational / Academic (đọc sau khi đã có intuition)
+## Foundational / Academic (đọc sau khi đã có intuition)
 
 - Gordon Plotkin & John Power — *"Notions of Computation Determine Monads"* (FoSSaCS 2002).
 - Gordon Plotkin & Matija Pretnar — *"Handlers of Algebraic Effects"* (ESOP 2009). Bài báo định nghĩa thuật ngữ effect handlers.
@@ -21,7 +21,7 @@
 - Eugenio Moggi — *"Notions of Computation and Monads"* (Information and Computation, 1991).
 - Sylvan Clebsch et al. — *"Deny Capabilities for Safe, Fast Actors"* (AGERE 2015). Pony language.
 
-### Modern Syntheses
+## Modern Syntheses
 
 - Martin Kleppmann — *"Designing Data-Intensive Applications"*. Chương 11 về stream processing = Kafka qua lens algebraic-effects-at-scale.
 - Nathaniel J. Smith — *"Notes on structured concurrency"* (vorpus.org, 2018). Tại sao `async/await` cần structured scoping giống OTP supervision.

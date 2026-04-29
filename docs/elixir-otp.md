@@ -1,6 +1,6 @@
 # Phần 2 — Elixir, Actor Model và GenServer
 
-### 2.1. Bối cảnh: BEAM, immutability, và process
+## 2.1. Bối cảnh: BEAM, immutability, và process
 
 Elixir compile xuống bytecode chạy trên **BEAM VM** (kế thừa từ Erlang, ra đời ở Ericsson những năm 1980 cho hệ thống viễn thông đòi hỏi 99.9999999% uptime — "nine nines"). Hai đặc tính cốt lõi không thể tách rời:
 
@@ -8,7 +8,7 @@ Elixir compile xuống bytecode chạy trên **BEAM VM** (kế thừa từ Erlan
 
 **Process isolation triệt để:** process trong BEAM không phải OS thread mà là lightweight process do scheduler của VM quản lý. Một node có thể chạy hàng triệu process. Mỗi process có **mailbox riêng**, **heap riêng**, không chia sẻ memory với process khác. Giao tiếp duy nhất là qua **message passing bất đồng bộ**.
 
-```
+```text
 BEAM Process Model vs OS Thread:
 ──────────────────────────────────────────────────
 OS Thread:                     BEAM Process:
@@ -29,7 +29,7 @@ OS Thread:                     BEAM Process:
 
 Đây là hiện thân thuần khiết nhất của **Actor Model** (Carl Hewitt, 1973): actor có ID, có mailbox, có thể (a) gửi message tới actor khác, (b) spawn actor mới, và (c) thay đổi hành vi cho message kế tiếp.
 
-### 2.2. State trong thế giới immutable: recursive loop + tham số
+## 2.2. State trong thế giới immutable: recursive loop + tham số
 
 Vì không thể mutate, làm sao một process "giữ" state? Câu trả lời là **đệ quy đuôi (tail recursion) trên tham số trạng thái**:
 
@@ -57,7 +57,7 @@ end
 
 State "sống" trong **stack frame của hàm `loop/1`**. Mỗi message làm hàm gọi lại chính nó với tham số đã được transform. Đây là cơ chế "stateful không cần biến mutable". BEAM tối ưu tail call nên đây không phải stack overflow — mỗi call thay thế frame hiện tại.
 
-```
+```text
 State evolution trong recursive loop:
 ──────────────────────────────────────
 loop(0)       ← initial
@@ -69,7 +69,7 @@ loop(2)       ← new frame
 loop(2)       ← không thay đổi, vẫn là frame mới
 ```
 
-### 2.3. GenServer: behaviour kết tinh pattern client-server
+## 2.3. GenServer: behaviour kết tinh pattern client-server
 
 Pattern recursive-receive-loop quá phổ biến đến mức OTP cung cấp một **behaviour** đóng gói nó: `GenServer`. Behaviour trong Elixir gần giống interface trong Java, nhưng mạnh hơn — nó còn cung cấp implementation mặc định, supervision integration, hot code swapping, telemetry, và distributed process registry.
 
@@ -155,7 +155,7 @@ end
 
 GenServer **về bản chất là một state machine**: mỗi callback là một transition function `(state, message) → new_state`, hoàn toàn pure trên giá trị state, dù được orchestrate trong một process có lifecycle.
 
-### 2.4. Supervisor và supervision tree: "let it crash"
+## 2.4. Supervisor và supervision tree: "let it crash"
 
 Triết lý Joe Armstrong: **đừng viết defensive code; hãy để process crash, rồi khôi phục về trạng thái sạch**. Process crash không làm sập hệ thống vì supervisor sẽ phát hiện và restart theo strategy đã định. Đây là **fault isolation kiến trúc** — không phải defensive programming bằng try/catch.
 
@@ -198,7 +198,7 @@ end
 
 **Các supervision strategy:**
 
-```
+```text
 :one_for_one    — chỉ restart process bị crash (processes độc lập)
 :one_for_all    — restart tất cả child khi một child crash (processes phụ thuộc nhau)
 :rest_for_one   — restart child crash + tất cả child đứng sau nó trong list
@@ -206,7 +206,7 @@ end
 
 **Cây supervisor (supervision tree) tạo nên kiến trúc fault-isolation phân tầng:**
 
-```
+```text
 MyApp.Supervisor (:one_for_one)
 ├── MyApp.Repo                    ← critical, nếu crash → app restart
 ├── MyApp.Registry                ← critical
@@ -219,10 +219,10 @@ MyApp.Supervisor (:one_for_one)
 
 **So sánh với Kubernetes:** cây supervisor này là điều mà Kubernetes/Docker Swarm phải mô phỏng ở tầng OS process. OTP làm điều tương tự ở tầng ứng dụng, với latency microseconds thay vì seconds.
 
-### 2.5. So sánh trực diện: GenServer vs `useState`/`useReducer`
+## 2.5. So sánh trực diện: GenServer vs `useState`/`useReducer`
 
 | Khía cạnh | React `useReducer` | Elixir `GenServer` |
-|---|---|---|
+| --- | --- | --- |
 | **Đơn vị state** | Component instance (fiber node) | Lightweight process (PID) |
 | **Cập nhật state** | `dispatch(action)` → reducer | `call/cast` → `handle_*` |
 | **Bản chất hàm cập nhật** | Pure: `(state, action) -> newState` | Pure: `(msg, state) -> {reply, newState}` |
@@ -239,7 +239,7 @@ MyApp.Supervisor (:one_for_one)
 - React reducer: chạy đồng bộ trong JS thread → đơn giản hơn, nhưng không có fault isolation thật sự. Một exception trong render subtree có thể leak nếu thiếu error boundary.
 - GenServer: chạy trong process riêng → concurrency thật, fault isolation, distribution, nhưng phải trả giá bằng overhead message passing và cognitive cost của asynchronous reasoning.
 
-### 2.6. GenStage và Flow: backpressure-aware pipeline
+## 2.6. GenStage và Flow: backpressure-aware pipeline
 
 Ngoài GenServer, OTP cung cấp **GenStage** — behaviour chuyên biệt cho data pipeline với built-in backpressure. Đây là điểm mà Elixir vượt xa các runtime khác trong việc xây dựng streaming systems:
 
@@ -267,7 +267,7 @@ end
 
 Pattern này không có equivalent trực tiếp trong React ecosystem (RxJS approach gần nhất), nhưng cho thấy breadth của tư duy "declarative pipeline" trong OTP.
 
-### 2.7. Ecto Changeset: Pure Core / Impure Shell trong thực chiến
+## 2.7. Ecto Changeset: Pure Core / Impure Shell trong thực chiến
 
 Nếu GenServer là ví dụ rõ nhất của pure transition function trong OTP, thì **Ecto Changeset** là ví dụ rõ nhất của "Functional Core, Imperative Shell" áp dụng cho tầng data và nghiệp vụ.
 
@@ -333,7 +333,7 @@ end
 **Ánh xạ sang React:**
 
 | Ecto | React |
-|---|---|
+| --- | --- |
 | `%Changeset{}` (mô tả transformation + errors) | `state` trong `useReducer` |
 | `cast/validate/transform` pipeline (pure) | `reducer(state, action) -> newState` (pure) |
 | `Repo.insert(changeset)` (impure shell) | `useEffect(() => fetch(...))` (impure shell) |
@@ -345,7 +345,6 @@ end
 ---
 
 Từ [Phần 1 (React)](react.md) đến Phần 2 (Elixir/OTP), ta đã thấy hai ngữ cảnh hoàn toàn khác nhau — UI trên trình duyệt và process trên BEAM — đều áp dụng cùng một cấu trúc: **pure transition function được orchestrate bởi runtime**. Câu hỏi tự nhiên đặt ra: cơ chế trừu tượng nào ngầm chi phối cả hai? Tại sao framework gọi code của mày, không phải mày gọi framework? Đó chính là Inversion of Control — nguyên lý kiến trúc mà [Phần 3](ioc.md) sẽ mổ xẻ.
-
 
 ---
 

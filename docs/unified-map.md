@@ -1,27 +1,27 @@
 # Phần 5 — Bản đồ tư duy thống nhất
 
-### 5.1. Ba trụ kiến trúc (kết tinh từ ba dòng tư tưởng ở Phần 0)
+## 5.1. Ba trụ kiến trúc (kết tinh từ ba dòng tư tưởng ở Phần 0)
 
 Lưu ý phân biệt thuật ngữ: **"ba dòng tư tưởng"** ở [Phần 0](index.md) là *lịch sử ý tưởng* (algebraic effects, actor model, Hollywood Principle) — đây là *nơi paradigm ra đời*. **"Ba trụ kiến trúc"** dưới đây là *kết quả triết học cụ thể* mà developer thấy trong code hàng ngày — đây là *cách paradigm biểu hiện*.
 
 Đặt bốn entity (React, Elixir/OTP, IoC, LiveView) cạnh nhau, ta thấy chúng cùng đứng trên ba trụ:
 
-**Trụ 1 — Tách "what" khỏi "when"**
+### Trụ 1 — Tách "what" khỏi "when"
 
 Cả ba đều khuyến khích viết các hàm/callback thuần mô tả *cái gì xảy ra với state khi có một sự kiện*, để runtime/framework lo *khi nào và như thế nào* sự kiện đó được trigger.
 
-```
+```text
 React:      reducer(state, action) → newState
 Elixir:     handle_call(msg, from, state) → {:reply, result, newState}
 LiveView:   handle_event(name, params, socket) → {:noreply, newSocket}
 IoC:        callback(context) → result  (framework quyết định khi nào gọi)
 ```
 
-**Trụ 2 — Pure Core, Impure Shell**
+### Trụ 2 — Pure Core, Impure Shell
 
 Logic nghiệp vụ (transition function) là pure. Side effect (DOM mutation, network IO, process spawning, supervisor restart) bị đẩy ra rìa, do framework/runtime điều phối.
 
-```
+```text
 "Functional Core, Imperative Shell" (Gary Bernhardt)
          ┌──────────────────────────┐
          │     IMPERATIVE SHELL     │
@@ -36,14 +36,14 @@ Logic nghiệp vụ (transition function) là pure. Side effect (DOM mutation, n
          └──────────────────────────┘
 ```
 
-**Trụ 3 — State qua tham số, không qua mutation**
+### Trụ 3 — State qua tham số, không qua mutation
 
 Cả `useReducer` lẫn GenServer đều ép developer trả về `newState` thay vì mutate. Việc state "tồn tại giữa các sự kiện" là chuyện của runtime.
 
-### 5.2. Bảng đối chiếu pattern hoàn chỉnh
+## 5.2. Bảng đối chiếu pattern hoàn chỉnh
 
 | Concept | React | Elixir/OTP | Phoenix LiveView | IoC tổng quát |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | **Đơn vị tính toán** | Function component | GenServer process | LiveView process | Callback object |
 | **State container** | Fiber node | Process heap | `%Socket{assigns}` | Framework-managed |
 | **State transition** | Reducer | `handle_call/cast` | `handle_event` | Pure handler |
@@ -58,12 +58,12 @@ Cả `useReducer` lẫn GenServer đều ép developer trả về `newState` tha
 | **Diffing** | Virtual DOM (client) | N/A | HTML diff (server) | N/A |
 | **Realtime** | useEffect + WebSocket | PubSub, GenServer | PubSub + handle_info | Event subscription |
 
-### 5.3. Bộ công cụ đọc framework bất kỳ: 5 vai trò universal
+## 5.3. Bộ công cụ đọc framework bất kỳ: 5 vai trò universal
 
 Khi gặp **bất kỳ** framework/runtime nào thuộc họ này — Temporal, Bevy ECS, SwiftUI, Unity, AWS Lambda, Kubernetes operator — ánh xạ về 5 vai trò sau:
 
 | Vai trò | React | OTP/GenServer | Spring DI | Elm TEA | Kubernetes | AWS Lambda |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | **Pure description (what)** | Component fn body | `handle_call/3`, `init/1` | Bean methods | `update`, `view` | YAML manifest | Handler fn |
 | **Effect operations (request)** | `useState`, `useEffect`, `Suspense throw` | `:reply/:noreply`, `Process.send` | `@Inject`, `@Autowired` | `Cmd msg`, `Sub msg` | `spec:` block | Return value |
 | **State (held by runtime)** | Fiber slots | Process heap | Container singleton | Model | etcd | Execution context |
@@ -80,19 +80,20 @@ Khi gặp **bất kỳ** framework/runtime nào thuộc họ này — Temporal, 
 
 Năm câu này là bộ đo lường thống nhất — trả lời được cho một framework, bạn hiểu kiến trúc của nó sâu hơn hầu hết tài liệu hướng dẫn chính thức.
 
-### 5.4. Vì sao hiểu cả ba (+ LiveView) tạo ra tư duy kiến trúc vượt trội
+## 5.4. Vì sao hiểu cả ba (+ LiveView) tạo ra tư duy kiến trúc vượt trội
 
-**Năng lực 1: Nhận diện pattern xuyên domain**
+### Năng lực 1: Nhận diện pattern xuyên domain
 
 Khi đọc Vue Composition API, Svelte stores, Jetpack Compose, SwiftUI — bạn lập tức nhận ra "đây cũng là IoC + pure transition". Không cần học lại từ đầu, chỉ cần map sang mental model đã có.
 
-**Năng lực 2: Thiết kế full-stack cùng triết lý**
+### Năng lực 2: Thiết kế full-stack cùng triết lý
 
 Một hệ thống đẹp có client React/LiveView + server GenServer, cùng một mental model: *state là kết quả tích lũy của events qua pure transition*. Event sourcing, CQRS trở nên tự nhiên thay vì exotic.
 
-**Năng lực 3: Gỡ rối ở tầng đúng**
+### Năng lực 3: Gỡ rối ở tầng đúng
 
 Một bug "state không update" có thể là:
+
 - Dependency array sai → `useEffect` không chạy lại (React)
 - `handle_cast` không trả `{:noreply, newState}` mà trả sai tuple (Elixir)
 - `assign` được gọi nhưng `render` không đọc đúng key (LiveView)
@@ -100,15 +101,16 @@ Một bug "state không update" có thể là:
 
 Cả bốn đều là cùng một họ lỗi: **callback contract bị vi phạm**. Hiểu IoC giúp debug ở mức triết học, không chỉ syntax.
 
-**Năng lực 4: Đánh giá trade-off xác đáng**
+### Năng lực 4: Đánh giá trade-off xác đáng
 
 Biết khi nào nên:
+
 - Dùng `useReducer` thay vì 5 `useState` lồng nhau
 - Đẩy state lên server làm GenServer thay vì giữ ở client
 - Dùng LiveView thay vì React + API cho realtime feature
 - Phá vỡ IoC để có control flow rõ ràng (imperative animation, manual transaction)
 
-**Năng lực 5: Tránh anti-pattern phổ biến**
+### Năng lực 5: Tránh anti-pattern phổ biến
 
 - Giữ state mutable trong closure React → stale closure
 - Gọi `GenServer.call` đệ quy → deadlock
@@ -117,11 +119,12 @@ Biết khi nào nên:
 
 Tất cả đều tránh được nếu đã nội hóa: *pure transition function + framework-driven control + dependency injection tường minh*.
 
-### 5.5. Hệ quả với testing: pure transition → test là value assertion
+## 5.5. Hệ quả với testing: pure transition → test là value assertion
 
 Đây là hệ quả tất yếu của paradigm chưa được nói thẳng: khi tách "mô tả khai báo" khỏi "thực thi có side effect", **test business logic trở thành so sánh giá trị thuần** — không mock, không setup, không teardown phức tạp.
 
 **React reducer:**
+
 ```javascript
 // Test: gọi pure function, assert output — không mount component, không render DOM
 test('increment action', () => {
@@ -140,6 +143,7 @@ test('useFetch returns loading then data', async () => {
 ```
 
 **Elixir GenServer callback:**
+
 ```elixir
 # Test handle_call trực tiếp — không start process, không message passing
 test "increment increases count" do
@@ -156,6 +160,7 @@ end
 ```
 
 **Elm / TEA:**
+
 ```elm
 test "increment msg updates model" =
     let
@@ -169,7 +174,8 @@ test "increment msg updates model" =
 Phần impure (HTTP call, DB write, DOM mutation) được test riêng ở tầng integration/e2e — và vì nó mỏng (chỉ là shell gọi framework), số lượng test cần ít hơn nhiều. Đây là lý do các codebase Elm và Elixir production thường đạt coverage cao với effort test thấp hơn so với codebase OOP imperative cùng quy mô.
 
 **So sánh với paradigm imperative:**
-```
+
+```text
 Imperative (class + DI + mock):        Pure transition:
 ────────────────────────────────        ──────────────────────────────
 @Mock UserRepository repo               test "reducer handles action" do
@@ -187,9 +193,6 @@ void testGetUser() {                    # 15+ dòng setup + mock
   assertEquals("Alice", result.name());
 }
 ```
-
----
-
 
 ---
 

@@ -1,10 +1,11 @@
 # Phần 4 — Phoenix LiveView: Nơi Ba Khái Niệm Hợp Nhất
 
-### 4.1. LiveView là gì và tại sao nó là "kết tinh"
+## 4.1. LiveView là gì và tại sao nó là "kết tinh"
 
 Phoenix LiveView là thư viện cho phép xây dựng giao diện người dùng **real-time, interactive** mà **không cần viết JavaScript**. Nó không phải là trick hay SSR thông thường — nó là một mô hình lập trình mới, được xây dựng trực tiếp trên nền tảng GenServer và WebSocket.
 
 **Điều làm LiveView đặc biệt:** mỗi LiveView mount tạo ra một **GenServer process riêng** cho mỗi client connection. Process đó:
+
 - Giữ state của UI trong heap của nó (như GenServer)
 - Nhận events từ browser qua WebSocket (như `handle_cast`)
 - Gọi `render/1` để tính HTML mới (như React component function)
@@ -15,7 +16,7 @@ Phoenix LiveView là thư viện cho phép xây dựng giao diện người dùn
 
 Đây là lần đầu tiên trong lịch sử mainstream có một framework mà **UI declarative + stateful process + IoC** hợp nhất thành **một primitive duy nhất**, không phải ba thứ ghép lại.
 
-```
+```text
 LiveView Architecture:
 ──────────────────────────────────────────────────────────
 Browser                    Server (BEAM)
@@ -34,7 +35,7 @@ phx-click event      ────►    handle_event/3 → assign(socket, ...)
                            payload)    │ send only changed parts
 ```
 
-### 4.2. LiveView như React: declarative UI pattern
+## 4.2. LiveView như React: declarative UI pattern
 
 Nhìn vào một LiveView component, bạn sẽ nhận ra ngay cấu trúc React:
 
@@ -119,7 +120,7 @@ end
 **Đối chiếu trực tiếp LiveView ↔ React:**
 
 | Concept | React | Phoenix LiveView |
-|---|---|---|
+| --- | --- | --- |
 | **Khởi tạo state** | `useState(initialValue)` | `assign(socket, key, value)` trong `mount/3` |
 | **State container** | Fiber node (browser memory) | `%Socket{assigns: %{...}}` (server process heap) |
 | **Update state** | `setState` / `dispatch` | `assign(socket, ...)` trả về socket mới |
@@ -131,7 +132,7 @@ end
 | **Reconciliation** | React reconciler (browser) | LiveView diff engine (BEAM) |
 | **Lifecycle cleanup** | `useEffect` return function | `terminate/2` của GenServer |
 
-### 4.3. LiveView như GenServer: process isolation và fault tolerance
+## 4.3. LiveView như GenServer: process isolation và fault tolerance
 
 Mỗi LiveView mount là một **GenServer process được supervisor quản lý**. Điều này mang lại toàn bộ OTP guarantees:
 
@@ -172,9 +173,10 @@ def terminate(_reason, socket) do
 end
 ```
 
-### 4.4. LiveView như IoC: Hollywood Principle hoàn hảo nhất
+## 4.4. LiveView như IoC: Hollywood Principle hoàn hảo nhất
 
 LiveView là hiện thân cực đoan nhất của Hollywood Principle. Bạn không:
+
 - Gọi WebSocket manually
 - Manage connection lifecycle
 - Diff HTML manually
@@ -184,7 +186,7 @@ LiveView là hiện thân cực đoan nhất của Hollywood Principle. Bạn kh
 
 Phoenix LiveView làm tất cả. Bạn chỉ implement các callbacks tại điểm được định nghĩa:
 
-```
+```text
 LiveView Hollywood Principle:
 ─────────────────────────────────────────────────────
 "Don't call us..."          "We'll call you when..."
@@ -198,7 +200,7 @@ PubSub.subscribe()     ──►  handle_info/2
 Session.cleanup()      ──►  terminate/2
 ```
 
-### 4.5. LiveView Streams: giải quyết bài toán large list
+## 4.5. LiveView Streams: giải quyết bài toán large list
 
 LiveView Streams (Phoenix 0.19+) là pattern giải quyết vấn đề render list lớn — tương tự virtualization trong React nhưng khác cơ chế:
 
@@ -231,7 +233,7 @@ end
 
 LiveView Streams không giữ toàn bộ list trong server-side state — chỉ gửi operations (insert/delete/update) xuống client, client tự apply. Đây là pattern cực kỳ efficient cho realtime feed.
 
-### 4.6. LiveView Components: composable stateless + stateful
+## 4.6. LiveView Components: composable stateless + stateful
 
 LiveView cung cấp hai loại component, mirror chính xác React's class vs functional components nhưng với semantic khác:
 
@@ -281,7 +283,7 @@ defmodule MyAppWeb.CartItemComponent do
 end
 ```
 
-### 4.7. JavaScript Hooks: escape hatch giống `useRef` + imperative handle
+## 4.7. JavaScript Hooks: escape hatch giống `useRef` + imperative handle
 
 Đôi khi cần JS native (animation, charting library, clipboard). LiveView JS Hooks là escape hatch:
 
@@ -322,14 +324,14 @@ let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks });
 **Pattern này mirror chính xác React's escape hatch:**
 
 | React | LiveView |
-|---|---|
+| --- | --- |
 | `useRef(null)` | `phx-hook="HookName"` |
 | `useEffect(() => { /* setup */ }, [])` | `mounted()` callback |
 | `useEffect cleanup` | `destroyed()` callback |
 | `useEffect` khi deps thay đổi | `updated()` callback |
 | `useImperativeHandle` | `this.pushEvent`, `this.handleEvent` |
 
-### 4.8. Realtime multi-user: PubSub + LiveView
+## 4.8. Realtime multi-user: PubSub + LiveView
 
 Đây là điểm LiveView làm được mà React (without WebSocket library) không có native:
 
@@ -368,9 +370,6 @@ end
 ```
 
 Với ~20 dòng code, ta có Kanban board realtime multi-user, không cần Redux, không cần WebSocket client library, không cần API endpoint riêng cho realtime.
-
----
-
 
 ---
 

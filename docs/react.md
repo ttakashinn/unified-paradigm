@@ -1,6 +1,6 @@
 # Phần 1 — React hiện đại dưới lăng kính Functional Programming
 
-### 1.1. Mô hình lập trình cốt lõi: UI = f(state)
+## 1.1. Mô hình lập trình cốt lõi: UI = f(state)
 
 Triết lý nền tảng của React — được Dan Abramov và đội ngũ React core nhắc đi nhắc lại — là: **giao diện người dùng nên là một hàm thuần của trạng thái**. Component lý tưởng là một pure function: cùng một input (`props`, `state`), luôn trả về cùng một output (cây React elements).
 
@@ -8,7 +8,7 @@ Chính tư tưởng này khiến class component trở nên gượng ép. Lifecy
 
 Hooks ra đời (React 16.8, đầu 2019) để giải quyết đúng vấn đề này. Theo Dan Abramov, hooks không phải là cú pháp đường ngọt cho class — chúng là một **mô hình lập trình mới**: thay vì nghĩ theo lifecycle, ta nghĩ theo *đồng bộ hóa giữa state và side effect*.
 
-```
+```text
 Class Component (tư duy cũ):         Functional Component (tư duy mới):
 ─────────────────────────────         ──────────────────────────────────
 "Khi nào mount? → làm gì"            "State X → effect Y phải đúng"
@@ -18,16 +18,17 @@ Class Component (tư duy cũ):         Functional Component (tư duy mới):
 Logic bị phân mảnh theo thời gian    Logic được gom theo ý nghĩa
 ```
 
-### 1.2. Hooks là "algebraic effects" giả lập trong JavaScript
+## 1.2. Hooks là "algebraic effects" giả lập trong JavaScript
 
 Đây là điểm tinh tế ít được thảo luận công khai. Dan Abramov đã nhiều lần tham chiếu đến **algebraic effects** như nền tảng lý thuyết cho hooks. Ý tưởng cốt lõi: khi một function `Component()` gọi `useState()`, nó không thực sự *thực hiện* việc cấp phát state — nó chỉ *yêu cầu* (raise an effect). React, đứng cao hơn trong call stack, đảm nhận vai trò "effect handler", quyết định trả về giá trị state nào, lưu trữ ở đâu, và khi nào re-render.
 
 Nhờ đó, **component vẫn có thể được coi là "thuần" về mặt khái niệm**, ngay cả khi nó dùng state. Phần "không thuần" được nâng lên cho runtime. Đây là cùng một tinh thần với cách:
+
 - Haskell xử lý IO qua monads
 - Elixir tách logic xử lý message ra khỏi việc spawn/schedule process
 - Kotlin coroutines xử lý suspension points
 
-```
+```text
 Algebraic Effect Model trong React:
 ────────────────────────────────────
 
@@ -46,7 +47,7 @@ Algebraic Effect Model trong React:
 
 Đây chính là lý do hooks chỉ có thể gọi *trong* function component hoặc *trong* custom hook khác: bên ngoài cây gọi của React, "effect handler" không tồn tại nên hook ném lỗi `"Invalid hook call"`.
 
-### 1.3. Closures và lexical scope: cơ chế ngầm dưới hooks
+## 1.3. Closures và lexical scope: cơ chế ngầm dưới hooks
 
 Mỗi lần render, **body của functional component thực thi lại từ đầu**. State "tồn tại" giữa các lần render được lưu trữ trong **fiber node** mà React quản lý nội bộ, được map cứng theo *thứ tự gọi hook* (đây chính là lý do "Rules of Hooks" cấm gọi hook trong điều kiện rẽ nhánh).
 
@@ -89,7 +90,7 @@ Hiểu sâu functional programming — đặc biệt closures và referential tr
 
 **Cơ chế lưu trữ fiber (để rõ ràng hơn):**
 
-```
+```text
 Fiber Node của <Counter />:
 ┌─────────────────────────────┐
 │  memoizedState (linked list)│
@@ -110,7 +111,7 @@ Fiber Node của <Counter />:
      để biết slot nào là slot nào
 ```
 
-### 1.4. Custom hooks: composition over inheritance
+## 1.4. Custom hooks: composition over inheritance
 
 Custom hook là vũ khí thật sự của paradigm này. Nó cho phép **composition của stateful logic** mà các pattern cũ (HOC, render props, mixins) không làm sạch được.
 
@@ -164,7 +165,7 @@ function UserSearch() {
 
 Logic nghiệp vụ ("fetch và quản lý vòng đời request", "debounce input") được tách hoàn toàn khỏi cả lifecycle lẫn presentation. Mỗi hook là một **đơn vị có thể test độc lập**, có thể tái sử dụng trong nhiều component, không conflict nhau vì mỗi invocation giữ slot state riêng trong fiber của component đó.
 
-### 1.5. `useReducer` và `useContext`: pure reducers + dependency injection
+## 1.5. `useReducer` và `useContext`: pure reducers + dependency injection
 
 `useReducer` đưa Redux pattern — **pure reducer function** — vào component-local state:
 
@@ -227,10 +228,10 @@ function UserList() {
 </ApiContext.Provider>
 ```
 
-### 1.6. Tại sao React chuyển từ class sang functional: tổng kết
+## 1.6. Tại sao React chuyển từ class sang functional: tổng kết
 
 | Vấn đề của class component | Giải pháp của functional + hooks |
-|---|---|
+| --- | --- |
 | `this` binding tạo lỗi tinh vi | Không có `this`, closure rõ ràng hơn |
 | Logic reuse qua HOC/render props tạo "wrapper hell" | Custom hooks: compose không wrap |
 | Lifecycle methods phân mảnh logic theo thời gian | `useEffect` gom logic theo ý nghĩa |
@@ -238,9 +239,6 @@ function UserList() {
 | Khó minify (class syntax giới hạn tree-shaking) | Function declarations: tối ưu tốt hơn |
 | Test phức tạp vì phải mount component | Custom hook test được thuần như unit test |
 | Mental model "instance vòng đời" không khớp React thực | Mental model "state → UI" đơn giản hơn |
-
----
-
 
 ---
 
