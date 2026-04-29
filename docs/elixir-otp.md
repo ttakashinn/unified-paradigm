@@ -29,7 +29,7 @@ OS Thread:                     BEAM Process:
 
 Đây là hiện thân thuần khiết nhất của **Actor Model** (Carl Hewitt, 1973): actor có ID, có mailbox, có thể (a) gửi message tới actor khác, (b) spawn actor mới, và (c) thay đổi hành vi cho message kế tiếp.
 
-## 2.2. State trong thế giới immutable: recursive loop + tham số
+## 2.2. State trong môi trường immutable: recursive loop + tham số
 
 Vì không thể mutate, làm sao một process "giữ" state? Câu trả lời là **đệ quy đuôi (tail recursion) trên tham số trạng thái**:
 

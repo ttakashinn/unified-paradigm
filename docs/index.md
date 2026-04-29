@@ -26,7 +26,7 @@ Christopher Strachey và Dana Scott (thập niên 1970) đề xuất **denotatio
 
 Điều này có hệ quả sâu xa: nếu hai chương trình có cùng denotation, chúng **hoán đổi được** mà không thay đổi hành vi quan sát được từ ngoài. Đây là nền tảng của **referential transparency** — tính chất mà functional programming hiện đại kế thừa.
 
-Nhưng side effects thì sao? Hàm `readFile("x.txt")` không thể có denotation là một giá trị cố định, vì nó phụ thuộc vào trạng thái file system. Strachey và Scott giải quyết bằng cách mở rộng denotation: thay vì `String`, denotation của `readFile` là một **hàm từ trạng thái thế giới sang (String, trạng thái thế giới mới)**. State được truyền tường minh qua tham số — không có mutation ngầm.
+Nhưng side effects thì sao? Hàm `readFile("x.txt")` không thể có denotation là một giá trị cố định, vì nó phụ thuộc vào trạng thái file system. Strachey và Scott giải quyết bằng cách mở rộng denotation: thay vì `String`, denotation của `readFile` là một **hàm nhận vào toàn bộ trạng thái hiện tại của hệ thống (file system, biến môi trường, v.v.) và trả về cặp `(String, trạng thái hệ thống sau khi đọc)`**. State được truyền tường minh qua tham số — không có mutation ngầm.
 
 #### Continuation-Passing Style: đặt tên cho "phần còn lại của tính toán"
 
@@ -45,7 +45,7 @@ Delimited continuations (Felleisen, Danvy, thập niên 1980) cho phép "chặn"
 
 #### Monads: đóng gói "tính toán có ngữ cảnh"
 
-Eugenio Moggi (1989) nhận ra rằng tất cả các dạng side effect (state, exception, IO, non-determinism, continuations) đều có thể được mô hình hóa bằng **monads** — một cấu trúc đại số từ category theory. Philip Wadler (1992) popularize monads vào lập trình hàm qua Haskell.
+Eugenio Moggi (1989) nhận ra rằng tất cả các dạng side effect (state, exception, IO, non-determinism, continuations) đều có thể được mô hình hóa bằng **monads** — một cấu trúc đại số từ category theory. Philip Wadler (1992) đưa monads vào cộng đồng lập trình hàm thông qua Haskell.
 
 Ý tưởng cốt lõi của monad: thay vì `f: A -> B`, hàm có side effect có kiểu `f: A -> M B` trong đó `M` là "container" đóng gói hiệu ứng. `M = IO` cho I/O, `M = Maybe` cho nullable, `M = State S` cho stateful computation, `M = Either E` cho exception. Hai phép toán `return` (đưa giá trị thuần vào container) và `bind/>>=` (chuỗi hai computation có effect) là đủ để compose mọi computation.
 
@@ -157,7 +157,7 @@ IoC không phải technique — đó là **đặc tính định nghĩa** của f
 
 Michael Sweet (Mesa language, Xerox PARC, 1983) đặt tên dễ nhớ hơn: **Hollywood's Law** — ví von như cách Hollywood casting: "Đừng gọi cho chúng tôi, chúng tôi sẽ gọi cho bạn."
 
-Martin Fowler sau đó hệ thống hóa và popularize thuật ngữ **Inversion of Control** trong cộng đồng Java/enterprise thập niên 2000, phân biệt hai specializations:
+Martin Fowler sau đó hệ thống hóa và phổ biến rộng rãi thuật ngữ **Inversion of Control** trong cộng đồng Java/enterprise thập niên 2000, phân biệt hai specializations:
 
 **IoC ở tầng flow** (nghĩa gốc): framework drive main loop, user code là callback. Ví dụ điển hình:
 
