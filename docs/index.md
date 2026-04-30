@@ -76,7 +76,7 @@ Eugenio Moggi (1989) nhận ra câu trả lời từ category theory: tất cả
 
 **Hệ quả quan trọng**: một hàm kiểu `IO String` trong Haskell không *thực hiện* I/O — nó *mô tả* một computation mà khi được diễn giải bởi Haskell runtime (trong `main`), sẽ thực hiện I/O. Đây chính là IoC ở mức kiểu: *runtime gọi code của bạn, bạn không gọi I/O trực tiếp*.
 
-Tuy nhiên, monads có một nhược điểm nghiêm trọng về mặt kỹ sư: **không compose tự nhiên**. `IO (State S A)` và `State S (IO A)` là hai thứ khác nhau và không ghép được dễ dàng. Khi cần kết hợp nhiều effects (vừa có I/O vừa có state vừa có exception), phải dùng “monad transformer stack” — một cơ chế phức tạp, verbose, và khó debug. Đây là vấn đề mà cộng đồng Haskell vật lộn suốt thập niên 2000.
+Tuy nhiên, monads có một nhược điểm nghiêm trọng: **không compose tự nhiên**. `IO (State S A)` và `State S (IO A)` là hai thứ khác nhau và không ghép được dễ dàng. Khi cần kết hợp nhiều effects (vừa có I/O vừa có state vừa có exception), phải dùng “monad transformer stack” — một cơ chế phức tạp, verbose, và khó debug. Đây là vấn đề mà cộng đồng Haskell vật lộn suốt thập niên 2000.
 
 #### Algebraic Effects & Handlers: tổng quát hoá cuối cùng (2002–nay)
 
