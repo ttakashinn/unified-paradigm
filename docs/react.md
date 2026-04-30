@@ -18,11 +18,11 @@ Class Component (tư duy cũ):         Functional Component (tư duy mới):
 Logic bị phân mảnh theo thời gian    Logic được gom theo ý nghĩa
 ```
 
-## 1.2. Hooks là "algebraic effects" giả lập trong JavaScript
+## 1.2. Hooks là “algebraic effects” giả lập trong JavaScript
 
-Đây là điểm tinh tế ít được thảo luận công khai. Dan Abramov đã nhiều lần tham chiếu đến **algebraic effects** như nền tảng lý thuyết cho hooks. Ý tưởng cốt lõi: khi một function `Component()` gọi `useState()`, nó không thực sự *thực hiện* việc cấp phát state — nó chỉ *yêu cầu* (raise an effect). React, đứng cao hơn trong call stack, đảm nhận vai trò "effect handler", quyết định trả về giá trị state nào, lưu trữ ở đâu, và khi nào re-render.
+Đây là điểm tinh tế ít được thảo luận công khai. Dan Abramov đã nhiều lần tham chiếu đến **algebraic effects** như nền tảng lý thuyết cho hooks. Ý tưởng cốt lõi: khi một function `Component()` gọi `useState()`, nó không thực sự *thực hiện* việc cấp phát state — nó chỉ *yêu cầu* (raise an effect). React, đứng cao hơn trong call stack, đảm nhận vai trò “effect handler”, quyết định trả về giá trị state nào, lưu trữ ở đâu, và khi nào re-render.
 
-Nhờ đó, **component vẫn có thể được coi là "thuần" về mặt khái niệm**, ngay cả khi nó dùng state. Phần "không thuần" được nâng lên cho runtime. Đây là cùng một tinh thần với cách:
+Nhờ đó, **component vẫn có thể được coi là “thuần” về mặt khái niệm**, ngay cả khi nó dùng state. Phần “không thuần” được nâng lên cho runtime. Đây là cùng một tinh thần với cách:
 
 - Haskell xử lý IO qua monads
 - Elixir tách logic xử lý message ra khỏi việc spawn/schedule process
@@ -45,11 +45,11 @@ Algebraic Effect Model trong React:
    việc lưu trữ hay scheduling)
 ```
 
-Đây chính là lý do hooks chỉ có thể gọi *trong* function component hoặc *trong* custom hook khác: bên ngoài cây gọi của React, "effect handler" không tồn tại nên hook ném lỗi `"Invalid hook call"`.
+Đây chính là lý do hooks chỉ có thể gọi *trong* function component hoặc *trong* custom hook khác: bên ngoài cây gọi của React, “effect handler” không tồn tại nên hook ném lỗi `"Invalid hook call"`.
 
 ## 1.3. Closures và lexical scope: cơ chế ngầm dưới hooks
 
-Mỗi lần render, **body của functional component thực thi lại từ đầu**. State "tồn tại" giữa các lần render được lưu trữ trong **fiber node** mà React quản lý nội bộ, được map cứng theo *thứ tự gọi hook* (đây chính là lý do "Rules of Hooks" cấm gọi hook trong điều kiện rẽ nhánh).
+Mỗi lần render, **body của functional component thực thi lại từ đầu**. State “tồn tại” giữa các lần render được lưu trữ trong **fiber node** mà React quản lý nội bộ, được map cứng theo *thứ tự gọi hook* (đây chính là lý do “Rules of Hooks” cấm gọi hook trong điều kiện rẽ nhánh).
 
 ```jsx
 function Counter() {
@@ -84,9 +84,9 @@ useEffect(() => {
 }, []);
 ```
 
-Hiểu sâu functional programming — đặc biệt closures và referential transparency — là **điều kiện cần** để gỡ rối hooks ở mức nâng cao. Đây không phải "React bug", đây là hệ quả tất yếu của việc dùng JS closures làm primitive cho state capture.
+Hiểu sâu functional programming — đặc biệt closures và referential transparency — là **điều kiện cần** để gỡ rối hooks ở mức nâng cao. Đây không phải “React bug”, đây là hệ quả tất yếu của việc dùng JS closures làm primitive cho state capture.
 
-> **Đúc kết về dependency array:** `[count, name]` trong `useEffect` không phải "danh sách những thứ tao muốn watch". Đó là **bản hợp đồng bạn ký với React runtime**: *"Closure trong effect này đang capture những giá trị này — hãy làm mới effect khi chúng thay đổi."* Vi phạm hợp đồng (khai báo thiếu hoặc thừa) là vi phạm callback contract với framework — cùng một họ lỗi với việc `handle_cast` trả sai tuple trong GenServer, hay `@impl` không đúng signature trong OTP behaviour. Stale closure là IoC contract bị phá vỡ ở tầng closure.
+> **Đúc kết về dependency array:** `[count, name]` trong `useEffect` không phải “danh sách những thứ tao muốn watch”. Đó là **bản hợp đồng bạn ký với React runtime**: *“Closure trong effect này đang capture những giá trị này — hãy làm mới effect khi chúng thay đổi.”* Vi phạm hợp đồng (khai báo thiếu hoặc thừa) là vi phạm callback contract với framework — cùng một họ lỗi với việc `handle_cast` trả sai tuple trong GenServer, hay `@impl` không đúng signature trong OTP behaviour. Stale closure là IoC contract bị phá vỡ ở tầng closure.
 
 **Cơ chế lưu trữ fiber (để rõ ràng hơn):**
 
@@ -117,6 +117,8 @@ Custom hook là vũ khí thật sự của paradigm này. Nó cho phép **compos
 
 ```jsx
 // useFetch.js — custom hook đóng gói logic fetch + cache + cancellation
+// (phiên bản đơn giản hoá — production cần thêm isMounted check để tránh
+//  set state sau khi component unmount, hoặc dùng useEffectEvent của React 19)
 function useFetch(url) {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
@@ -163,7 +165,7 @@ function UserSearch() {
 }
 ```
 
-Logic nghiệp vụ ("fetch và quản lý vòng đời request", "debounce input") được tách hoàn toàn khỏi cả lifecycle lẫn presentation. Mỗi hook là một **đơn vị có thể test độc lập**, có thể tái sử dụng trong nhiều component, không conflict nhau vì mỗi invocation giữ slot state riêng trong fiber của component đó.
+Logic nghiệp vụ (“fetch và quản lý vòng đời request”, “debounce input”) được tách hoàn toàn khỏi cả lifecycle lẫn presentation. Mỗi hook là một **đơn vị có thể test độc lập**, có thể tái sử dụng trong nhiều component, không conflict nhau vì mỗi invocation giữ slot state riêng trong fiber của component đó.
 
 ## 1.5. `useReducer` và `useContext`: pure reducers + dependency injection
 
@@ -177,7 +179,8 @@ function counterReducer(state, action) {
     case 'increment': return { ...state, count: state.count + 1 };
     case 'decrement': return { ...state, count: state.count - 1 };
     case 'reset':     return { ...state, count: action.payload ?? 0 };
-    default:          throw new Error(`Unknown action: ${action.type}`);
+    default:          return state;  // Modern React: return state thay vì throw
+                                     // (throw có thể gây unhandled error trong dispatch)
   }
 }
 
@@ -230,16 +233,20 @@ function UserList() {
 
 ## 1.6. Tại sao React chuyển từ class sang functional: tổng kết
 
-| Vấn đề của class component | Giải pháp của functional + hooks |
-| --- | --- |
-| `this` binding tạo lỗi tinh vi | Không có `this`, closure rõ ràng hơn |
-| Logic reuse qua HOC/render props tạo "wrapper hell" | Custom hooks: compose không wrap |
-| Lifecycle methods phân mảnh logic theo thời gian | `useEffect` gom logic theo ý nghĩa |
-| `componentDidMount` nhồi chung nhiều concerns không liên quan | Mỗi `useEffect` = một concern |
-| Khó minify (class syntax giới hạn tree-shaking) | Function declarations: tối ưu tốt hơn |
-| Test phức tạp vì phải mount component | Custom hook test được thuần như unit test |
-| Mental model "instance vòng đời" không khớp React thực | Mental model "state → UI" đơn giản hơn |
+|Vấn đề của class component                                   |Giải pháp của functional + hooks         |
+|-------------------------------------------------------------|-----------------------------------------|
+|`this` binding tạo lỗi tinh vi                               |Không có `this`, closure rõ ràng hơn     |
+|Logic reuse qua HOC/render props tạo “wrapper hell”          |Custom hooks: compose không wrap         |
+|Lifecycle methods phân mảnh logic theo thời gian             |`useEffect` gom logic theo ý nghĩa       |
+|`componentDidMount` nhồi chung nhiều concerns không liên quan|Mỗi `useEffect` = một concern            |
+|Khó minify (class syntax giới hạn tree-shaking)              |Function declarations: tối ưu tốt hơn    |
+|Test phức tạp vì phải mount component                        |Custom hook test được thuần như unit test|
+|Mental model “instance vòng đời” không khớp React thực       |Mental model “state → UI” đơn giản hơn   |
 
----
+-----
+
+React Hooks là **Dòng 1 + Dòng 3** áp dụng cho UI layer trong môi trường single-threaded JavaScript: pure transition function (Dòng 1) + framework điều phối (Dòng 3). Câu hỏi tự nhiên đặt ra: nếu pattern này mạnh đến vậy với UI, liệu nó có scale lên một môi trường khác hoàn toàn — concurrent, distributed, fault-tolerant không? Đó chính xác là bài toán mà Erlang/OTP đã giải hơn 30 năm trước, ở quy mô lớn hơn nhiều — và là chủ đề của Phần 2.
+
+-----
 
 **Trước:** [← Phần 0 — Nền tảng lý thuyết](index.md) | **Tiếp theo:** [Phần 2 — Elixir, Actor Model và GenServer →](elixir-otp.md)
