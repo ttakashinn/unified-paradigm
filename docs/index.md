@@ -82,7 +82,7 @@ Tuy nhiên, monads có một nhược điểm nghiêm trọng: **không compose 
 
 Gordon Plotkin và John Power (2002) tiếp cận bài toán từ góc độ đại số thuần tuý hơn: họ nhận ra rằng các computational effects đều là **free algebras** — cấu trúc đại số được sinh ra từ một tập operations, không cần thêm gì khác. Plotkin và Matija Pretnar (2009) bổ sung **handlers**: cơ chế để *diễn giải* các operations đó theo nhiều cách khác nhau.
 
-Thực hành, điều này có nghĩa là bạn tách rời hai việc hoàn toàn:
+Về mặt thực hành, điều này có nghĩa là bạn tách rời hai việc hoàn toàn:
 
 ```javascript
 // Phần 1: Code CHỈ khai báo nó cần gì — không thực thi gì cả
