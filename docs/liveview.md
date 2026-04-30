@@ -1,6 +1,6 @@
 # Phần 4 — Phoenix LiveView: Nơi Ba Khái Niệm Hợp Nhất
 
-## 4.1. LiveView là gì và tại sao nó là "kết tinh"
+## 4.1. LiveView là gì và tại sao nó là “kết tinh”
 
 Phoenix LiveView là thư viện cho phép xây dựng giao diện người dùng **real-time, interactive** mà **không cần viết JavaScript**. Nó không phải là trick hay SSR thông thường — nó là một mô hình lập trình mới, được xây dựng trực tiếp trên nền tảng GenServer và WebSocket.
 
@@ -14,7 +14,7 @@ Phoenix LiveView là thư viện cho phép xây dựng giao diện người dùn
 
 **Binary diff protocol — lý do LiveView scale được:** React diff diễn ra ở client (tốn CPU browser), LiveView diff diễn ra ở server (CPU BEAM) nhưng chỉ truyền kết quả diff xuống wire. Erlang binary term format thường nén structured data hiệu quả hơn JSON đáng kể (mức độ tùy thuộc data shape). Kết quả: một interaction điển hình (update một row trong table, toggle một flag) chỉ tạo payload rất nhỏ qua WebSocket — thường vài chục bytes — so với SSR truyền thống phải gửi lại toàn bộ HTML fragment. Đây là lý do LiveView đạt được latency cảm giác như SPA mà không cần client-side state management. Chris McCord đã công bố các benchmark cụ thể trong các keynote ElixirConf nếu cần số liệu chính xác cho từng workload.
 
-Đây là lần đầu tiên trong lịch sử mainstream có một framework mà **UI declarative + stateful process + IoC** hợp nhất thành **một primitive duy nhất**, không phải ba thứ ghép lại.
+Đây là **framework mainstream đầu tiên được áp dụng rộng rãi** mà **UI declarative + stateful process + IoC** hợp nhất thành **một primitive duy nhất**, không phải ba thứ ghép lại. (Các framework trước như Meteor.js 2012 đã đi theo hướng này nhưng không scale được; Pharo Seaside trong cộng đồng Smalltalk có ý tưởng tương tự nhưng giới hạn trong niche. LiveView là implementation đầu tiên kết hợp đầy đủ ba yếu tố này trong một stack production-grade được cộng đồng web áp dụng rộng.)
 
 ```text
 LiveView Architecture:
@@ -119,18 +119,18 @@ end
 
 **Đối chiếu trực tiếp LiveView ↔ React:**
 
-| Concept | React | Phoenix LiveView |
-| --- | --- | --- |
-| **Khởi tạo state** | `useState(initialValue)` | `assign(socket, key, value)` trong `mount/3` |
-| **State container** | Fiber node (browser memory) | `%Socket{assigns: %{...}}` (server process heap) |
-| **Update state** | `setState` / `dispatch` | `assign(socket, ...)` trả về socket mới |
-| **Event handler** | `onClick`, `onChange` | `handle_event("name", params, socket)` |
-| **Server message** | Không có native equivalent | `handle_info(message, socket)` |
-| **Side effects** | `useEffect` với cleanup | `mount + connected?/1`, `handle_info` |
-| **Template** | JSX | HEEx template |
-| **Diffing** | Virtual DOM (client-side) | HTML diff (server-side, binary protocol) |
-| **Reconciliation** | React reconciler (browser) | LiveView diff engine (BEAM) |
-| **Lifecycle cleanup** | `useEffect` return function | `terminate/2` của GenServer |
+|Concept              |React                      |Phoenix LiveView                                |
+|---------------------|---------------------------|------------------------------------------------|
+|**Khởi tạo state**   |`useState(initialValue)`   |`assign(socket, key, value)` trong `mount/3`    |
+|**State container**  |Fiber node (browser memory)|`%Socket{assigns: %{...}}` (server process heap)|
+|**Update state**     |`setState` / `dispatch`    |`assign(socket, ...)` trả về socket mới         |
+|**Event handler**    |`onClick`, `onChange`      |`handle_event("name", params, socket)`          |
+|**Server message**   |Không có native equivalent |`handle_info(message, socket)`                  |
+|**Side effects**     |`useEffect` với cleanup    |`mount + connected?/1`, `handle_info`           |
+|**Template**         |JSX                        |HEEx template                                   |
+|**Diffing**          |Virtual DOM (client-side)  |HTML diff (server-side, binary protocol)        |
+|**Reconciliation**   |React reconciler (browser) |LiveView diff engine (BEAM)                     |
+|**Lifecycle cleanup**|`useEffect` return function|`terminate/2` của GenServer                     |
 
 ## 4.3. LiveView như GenServer: process isolation và fault tolerance
 
@@ -149,7 +149,7 @@ Phoenix.LiveView.Supervisor
 # Tất cả connections khác không bị ảnh hưởng
 ```
 
-**"Let it crash" trong LiveView context:**
+**“Let it crash” trong LiveView context:**
 
 ```elixir
 def handle_event("process_payment", params, socket) do
@@ -235,7 +235,7 @@ LiveView Streams không giữ toàn bộ list trong server-side state — chỉ 
 
 ## 4.6. LiveView Components: composable stateless + stateful
 
-LiveView cung cấp hai loại component, mirror chính xác React's class vs functional components nhưng với semantic khác:
+LiveView cung cấp hai loại component có vai trò khác nhau — stateless (Phoenix.Component) và stateful (Phoenix.LiveComponent). Phoenix.Component tương đương trực tiếp với React functional component không có state. Phoenix.LiveComponent có state riêng và lifecycle riêng nhưng vẫn server-rendered — không có analog 1:1 với React (gần với child function component có `useState` riêng nhưng được “scope” theo `@myself`):
 
 ```elixir
 # Stateless Function Component (như React functional component)
@@ -321,15 +321,15 @@ let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks });
 </canvas>
 ```
 
-**Pattern này mirror chính xác React's escape hatch:**
+**Pattern này tương ứng với mô hình ref + effect lifecycle trong React (không phải useRef đơn lẻ):**
 
-| React | LiveView |
-| --- | --- |
-| `useRef(null)` | `phx-hook="HookName"` |
-| `useEffect(() => { /* setup */ }, [])` | `mounted()` callback |
-| `useEffect cleanup` | `destroyed()` callback |
-| `useEffect` khi deps thay đổi | `updated()` callback |
-| `useImperativeHandle` | `this.pushEvent`, `this.handleEvent` |
+|React                                                        |LiveView JS Hook                                       |
+|-------------------------------------------------------------|-------------------------------------------------------|
+|Ref vào DOM element (`useRef` + `ref={}`)                    |`this.el` trong hook (DOM element được hook bind vào)  |
+|`useEffect(() => { /* setup */ }, [])`                       |`mounted()` callback                                   |
+|`useEffect cleanup`                                          |`destroyed()` callback                                 |
+|`useEffect` khi deps thay đổi                                |`updated()` callback                                   |
+|Imperative communication (`useImperativeHandle` + parent ref)|`this.pushEvent`, `this.handleEvent` (server ↔ JS hook)|
 
 ## 4.8. Realtime multi-user: PubSub + LiveView
 
@@ -371,6 +371,10 @@ end
 
 Với ~20 dòng code, ta có Kanban board realtime multi-user, không cần Redux, không cần WebSocket client library, không cần API endpoint riêng cho realtime.
 
----
+-----
+
+Đến đây đã đi qua bốn hiện thân cụ thể: React Hooks (Phần 1), Elixir/OTP (Phần 2), Inversion of Control (Phần 3), và Phoenix LiveView (Phần 4). Mỗi cái có syntax và terminology riêng. Phần 5 đi ngược lên một tầng trừu tượng — đặt cả bốn cạnh nhau, rút ra ba trụ kiến trúc chung, và xây dựng một bản đồ thống nhất giúp đọc bất kỳ framework nào cùng họ này trong tương lai.
+
+-----
 
 **Trước:** [← Phần 3 — IoC](ioc.md) | **Tiếp theo:** [Phần 5 — Bản đồ tư duy thống nhất →](unified-map.md)
